@@ -55,7 +55,7 @@ const buildSession = async (user) => {
 
 export const registerUser = async ({ name, email, password }) => {
   const userCount = await getUserCount();
-  const role = userCount === 0 ? ROLES.ADMIN : ROLES.VIEWER;
+  const role = ROLES.ADMIN;
 
   const user = await createUserRecord({
     name,
