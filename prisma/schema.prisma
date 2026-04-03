@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  VIEWER
+  ANALYST
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RecordType {
+  INCOME
+  EXPENSE
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  role   Role       @default(VIEWER)
+  status UserStatus @default(ACTIVE)
+
+  records Record[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@index([email])
+}
+
+model Record {
+  id String @id @default(uuid())
+
+  amount Decimal    @db.Decimal(10, 2)
+  type   RecordType
+
+  note String?
+
+  date DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([date])
+  @@index([categoryId])
+}
+
+model Category {
+  id   String     @id @default(uuid())
+  name String
+  type RecordType
+
+  records Record[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([name, type])
+}
+
+model RefreshToken {
+  id    String @id @default(uuid())
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id String @id @default(uuid())
+
+  action   String
+  entity   String
+  entityId String
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+  @@index([userId])
+}
