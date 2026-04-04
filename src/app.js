@@ -23,7 +23,7 @@ export const createApp = async () => {
   app.use(compression());
   app.use(
     cors({
-      origin: env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
+      origin: "*"),
       credentials: true,
     }),
   );
