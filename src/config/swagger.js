@@ -8,10 +8,9 @@ export const swaggerSpec = {
     description:
       "A production-oriented finance backend with role-based access control, summaries, search, filtering, pagination, and soft delete support.",
   },
-  servers: [
+servers: [
     {
-      url: `http://localhost:${env.PORT}`,
-      description: "Local development server",
+      url: process.env.BASE_URL || "http://localhost:3000",
     },
   ],
   tags: [
