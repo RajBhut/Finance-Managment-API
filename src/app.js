@@ -12,6 +12,10 @@ import { errorMiddleware } from "./middleware/error.middleware.js";
 import { notFoundMiddleware } from "./middleware/notFound.middleware.js";
 import apiRoutes from "./routes/index.js";
 import authRoutes from "./routes/auth.routes.js";
+const origins = process.env.CORS
+  ? process.env.CORS.split(',').map(o => o.trim())
+  : '*';
+
 
 export const createApp = async () => {
   const app = express();
@@ -21,12 +25,9 @@ export const createApp = async () => {
 
   app.use(helmet());
   app.use(compression());
-  app.use(
-    cors({
-      origin: "*"),
-      credentials: true,
-    }),
-  );
+  app.use(cors({ origin: origins ,
+credentials: true
+}));
   app.use(express.json({ limit: "1mb" }));
   app.use(cookieParser());
   app.use(morgan(env.NODE_ENV === "production" ? "combined" : "dev"));
